@@ -29,15 +29,15 @@ local Library = {
 
     HudRegistry = {};
 
-    FontColor = Color3.fromRGB(245, 245, 245); -- Even brighter font for better contrast
-    MainColor = Color3.fromRGB(35, 35, 35); -- Slightly lighter main color
-    BackgroundColor = Color3.fromRGB(28, 28, 28); -- Slightly lighter background
-    AccentColor = Color3.fromRGB(0, 140, 255); -- More vibrant accent color
-    OutlineColor = Color3.fromRGB(70, 70, 70); -- Lighter outline for subtlety
-    RiskColor = Color3.fromRGB(255, 80, 80), -- Adjusted risk color
+    FontColor = Color3.fromRGB(250, 250, 250); -- Pure white for maximum readability
+    MainColor = Color3.fromRGB(40, 40, 40); -- Lighter main color for better contrast
+    BackgroundColor = Color3.fromRGB(32, 32, 32); -- Lighter background
+    AccentColor = Color3.fromRGB(0, 170, 255); -- Vibrant blue accent
+    OutlineColor = Color3.fromRGB(80, 80, 80); -- Lighter outline for subtlety
+    RiskColor = Color3.fromRGB(255, 90, 90), -- Brighter risk color
 
     Black = Color3.new(0, 0, 0);
-    Font = Enum.Font.GothamSemibold, -- Changed to semibold for better readability
+    Font = Enum.Font.GothamBold, -- Bold font for better readability
 
     OpenedFrames = {};
     DependencyBoxes = {};
@@ -1430,7 +1430,7 @@ do
             local Outer = Library:Create('Frame', {
                 BackgroundColor3 = Color3.new(0, 0, 0);
                 BorderColor3 = Color3.new(0, 0, 0);
-                Size = UDim2.new(1, -4, 0, 28); -- Even taller buttons
+                Size = UDim2.new(1, -4, 0, 32); -- Much taller buttons
                 ZIndex = 5;
             });
 
@@ -1657,7 +1657,7 @@ do
         local TextBoxOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 24); -- Taller input box
+            Size = UDim2.new(1, -4, 0, 28); -- Taller input box
             ZIndex = 5;
             Parent = Container;
         });
@@ -1831,7 +1831,7 @@ do
         local ToggleOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(0, 16, 0, 16); -- Even larger toggle
+            Size = UDim2.new(0, 18, 0, 18); -- Much larger toggle
             ZIndex = 5;
             Parent = Container;
         });
@@ -1856,7 +1856,7 @@ do
 
         local ToggleLabel = Library:CreateLabel({
             Size = UDim2.new(0, 216, 1, 0);
-            Position = UDim2.new(1, 10, 0, 0); -- More spacing
+            Position = UDim2.new(1, 12, 0, 0); -- More spacing
             TextSize = 14;
             Text = Info.Text;
             TextXAlignment = Enum.TextXAlignment.Left;
@@ -1973,7 +1973,7 @@ do
 
         if not Info.Compact then
             Library:CreateLabel({
-                Size = UDim2.new(1, 0, 0, 14); -- Increased height
+                Size = UDim2.new(1, 0, 0, 16); -- Taller label
                 TextSize = 14;
                 Text = Info.Text;
                 TextXAlignment = Enum.TextXAlignment.Left;
@@ -1982,13 +1982,13 @@ do
                 Parent = Container;
             });
 
-            Groupbox:AddBlank(5); -- More spacing
+            Groupbox:AddBlank(6); -- More spacing
         end
 
         local SliderOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 16); -- Even taller slider
+            Size = UDim2.new(1, -4, 0, 18); -- Much taller slider
             ZIndex = 5;
             Parent = Container;
         });
@@ -2200,7 +2200,7 @@ do
         local DropdownOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 24); -- Taller dropdown
+            Size = UDim2.new(1, -4, 0, 28); -- Much taller dropdown
             ZIndex = 5;
             Parent = Container;
         });
@@ -2943,11 +2943,11 @@ function Library:CreateWindow(...)
     end
 
     if type(Config.Title) ~= 'string' then Config.Title = 'No title' end
-    if type(Config.TabPadding) ~= 'number' then Config.TabPadding = 6 end -- Increased tab padding
+    if type(Config.TabPadding) ~= 'number' then Config.TabPadding = 8 end -- Much more padding between tabs
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
-    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(550, 600) end
+    if typeof(Config.Size) ~= 'UDim2' then Config.Size = UDim2.fromOffset(600, 650) end -- Slightly larger window
 
     if Config.Center then
         Config.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -2969,7 +2969,7 @@ function Library:CreateWindow(...)
         Parent = ScreenGui;
     });
 
-    Library:MakeDraggable(Outer, 25);
+    Library:MakeDraggable(Outer, 35); -- Taller draggable area
 
     local Inner = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
@@ -2987,9 +2987,10 @@ function Library:CreateWindow(...)
     });
 
     local WindowLabel = Library:CreateLabel({
-        Position = UDim2.new(0, 7, 0, 0);
-        Size = UDim2.new(0, 0, 0, 25);
+        Position = UDim2.new(0, 10, 0, 0); -- More padding
+        Size = UDim2.new(0, 0, 0, 35); -- Taller header
         Text = Config.Title or '';
+        TextSize = 16; -- Larger text
         TextXAlignment = Enum.TextXAlignment.Left;
         ZIndex = 1;
         Parent = Inner;
@@ -2998,8 +2999,8 @@ function Library:CreateWindow(...)
     local MainSectionOuter = Library:Create('Frame', {
         BackgroundColor3 = Library.BackgroundColor;
         BorderColor3 = Library.OutlineColor;
-        Position = UDim2.new(0, 8, 0, 25);
-        Size = UDim2.new(1, -16, 1, -33);
+        Position = UDim2.new(0, 10, 0, 35); -- Adjusted position
+        Size = UDim2.new(1, -20, 1, -45); -- More padding
         ZIndex = 1;
         Parent = Inner;
     });
@@ -3025,8 +3026,8 @@ function Library:CreateWindow(...)
 
     local TabArea = Library:Create('Frame', {
         BackgroundTransparency = 1;
-        Position = UDim2.new(0, 8, 0, 8);
-        Size = UDim2.new(1, -16, 0, 21);
+        Position = UDim2.new(0, 10, 0, 10); -- More padding
+        Size = UDim2.new(1, -20, 0, 25); -- Taller tab area
         ZIndex = 1;
         Parent = MainSectionInner;
     });
@@ -3041,12 +3042,11 @@ function Library:CreateWindow(...)
     local TabContainer = Library:Create('Frame', {
         BackgroundColor3 = Library.MainColor;
         BorderColor3 = Library.OutlineColor;
-        Position = UDim2.new(0, 8, 0, 30);
-        Size = UDim2.new(1, -16, 1, -38);
+        Position = UDim2.new(0, 10, 0, 40); -- Adjusted position
+        Size = UDim2.new(1, -20, 1, -50); -- More padding
         ZIndex = 2;
         Parent = MainSectionInner;
     });
-    
 
     Library:AddToRegistry(TabContainer, {
         BackgroundColor3 = 'MainColor';
