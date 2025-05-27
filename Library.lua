@@ -29,15 +29,27 @@ local Library = {
 
     HudRegistry = {};
 
-    FontColor = Color3.fromRGB(250, 250, 250); -- Pure white for maximum readability
-    MainColor = Color3.fromRGB(40, 40, 40); -- Lighter main color for better contrast
-    BackgroundColor = Color3.fromRGB(32, 32, 32); -- Lighter background
-    AccentColor = Color3.fromRGB(0, 170, 255); -- Vibrant blue accent
-    OutlineColor = Color3.fromRGB(80, 80, 80); -- Lighter outline for subtlety
-    RiskColor = Color3.fromRGB(255, 90, 90), -- Brighter risk color
+    -- Base colors for non-rainbow elements
+    FontColor = Color3.fromRGB(250, 250, 250);
+    MainColor = Color3.fromRGB(40, 40, 40);
+    BackgroundColor = Color3.fromRGB(32, 32, 32);
+    AccentColor = Color3.fromRGB(0, 170, 255);
+    OutlineColor = Color3.fromRGB(80, 80, 80);
+    RiskColor = Color3.fromRGB(255, 90, 90),
+
+    -- Rainbow colors
+    RainbowColors = {
+        Color3.fromRGB(255, 0, 0),    -- Red
+        Color3.fromRGB(255, 165, 0),  -- Orange
+        Color3.fromRGB(255, 255, 0),  -- Yellow
+        Color3.fromRGB(0, 255, 0),    -- Green
+        Color3.fromRGB(0, 0, 255),    -- Blue
+        Color3.fromRGB(75, 0, 130),   -- Indigo
+        Color3.fromRGB(238, 130, 238) -- Violet
+    };
 
     Black = Color3.new(0, 0, 0);
-    Font = Enum.Font.GothamBold, -- Bold font for better readability
+    Font = Enum.Font.GothamBold;
 
     OpenedFrames = {};
     DependencyBoxes = {};
@@ -46,25 +58,70 @@ local Library = {
     ScreenGui = ScreenGui;
 };
 
-local RainbowStep = 0
-local Hue = 0
+-- Rainbow effect variables
+local RainbowStep = 0;
+local RainbowSpeed = 0.5; -- Speed of rainbow transition
+local CurrentRainbowIndex = 1;
+local RainbowEnabled = true;
 
-table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
-    RainbowStep = RainbowStep + Delta
+-- Function to get next rainbow color
+function Library:GetNextRainbowColor()
+    if not RainbowEnabled then return self.AccentColor end
+    
+    local currentColor = self.RainbowColors[CurrentRainbowIndex]
+    local nextIndex = CurrentRainbowIndex % #self.RainbowColors + 1
+    local nextColor = self.RainbowColors[nextIndex]
+    
+    -- Smooth transition between colors
+    local t = math.sin(RainbowStep * math.pi) * 0.5 + 0.5
+    return currentColor:Lerp(nextColor, t)
+end
 
-    if RainbowStep >= (1 / 60) then
-        RainbowStep = 0
-
-        Hue = Hue + (1 / 400);
-
-        if Hue > 1 then
-            Hue = 0;
-        end;
-
-        Library.CurrentRainbowHue = Hue;
-        Library.CurrentRainbowColor = Color3.fromHSV(Hue, 0.8, 1);
+-- Update rainbow colors
+table.insert(Library.Signals, RunService.RenderStepped:Connect(function(deltaTime)
+    if RainbowEnabled then
+        RainbowStep = RainbowStep + deltaTime * RainbowSpeed
+        
+        if RainbowStep >= 1 then
+            RainbowStep = 0
+            CurrentRainbowIndex = CurrentRainbowIndex % #Library.RainbowColors + 1
+        end
+        
+        -- Update accent color for rainbow effect
+        Library.AccentColor = Library:GetNextRainbowColor()
+        Library:UpdateColorsUsingRegistry()
     end
 end))
+
+-- Enhanced gradient function
+function Library:CreateGradient(parent)
+    local gradient = Library:Create('UIGradient', {
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Library:GetNextRainbowColor()),
+            ColorSequenceKeypoint.new(1, Library:GetNextRainbowColor())
+        });
+        Rotation = -45;
+        Parent = parent;
+    });
+    
+    -- Animate gradient
+    task.spawn(function()
+        while true do
+            for i = 0, 1, 0.01 do
+                if not gradient.Parent then break end
+                gradient.Rotation = -45 + i * 90
+                task.wait(0.01)
+            end
+            for i = 1, 0, -0.01 do
+                if not gradient.Parent then break end
+                gradient.Rotation = 45 + i * 90
+                task.wait(0.01)
+            end
+        end
+    end)
+    
+    return gradient
+end
 
 local function GetPlayersString()
     local PlayerList = Players:GetPlayers();
@@ -1443,20 +1500,14 @@ do
                 Parent = Outer;
             });
 
+            -- Add animated gradient
+            Library:CreateGradient(Inner)
+
             local Label = Library:CreateLabel({
                 Size = UDim2.new(1, 0, 1, 0);
                 TextSize = 14;
                 Text = Button.Text;
-                ZIndex = 6;
-                Parent = Inner;
-            });
-
-            Library:Create('UIGradient', {
-                Color = ColorSequence.new({
-                    ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
-                    ColorSequenceKeypoint.new(1, Color3.fromRGB(212, 212, 212))
-                });
-                Rotation = 90;
+                ZIndex = 7;
                 Parent = Inner;
             });
 
@@ -1893,9 +1944,9 @@ do
         end
 
         function Toggle:Display()
-            ToggleInner.BackgroundColor3 = Toggle.Value and Library.AccentColor or Library.MainColor;
-            ToggleInner.BorderColor3 = Toggle.Value and Library.AccentColorDark or Library.OutlineColor;
-
+            ToggleInner.BackgroundColor3 = Toggle.Value and Library:GetNextRainbowColor() or Library.MainColor;
+            ToggleInner.BorderColor3 = Toggle.Value and Library:GetNextRainbowColor():Lerp(Color3.new(0, 0, 0), 0.5) or Library.OutlineColor;
+            
             Library.RegistryMap[ToggleInner].Properties.BackgroundColor3 = Toggle.Value and 'AccentColor' or 'MainColor';
             Library.RegistryMap[ToggleInner].Properties.BorderColor3 = Toggle.Value and 'AccentColorDark' or 'OutlineColor';
         end;
@@ -2012,8 +2063,8 @@ do
         });
 
         local Fill = Library:Create('Frame', {
-            BackgroundColor3 = Library.AccentColor;
-            BorderColor3 = Library.AccentColorDark;
+            BackgroundColor3 = Library:GetNextRainbowColor();
+            BorderColor3 = Library:GetNextRainbowColor():Lerp(Color3.new(0, 0, 0), 0.5);
             Size = UDim2.new(0, 0, 1, 0);
             ZIndex = 7;
             Parent = SliderInner;
@@ -2025,7 +2076,7 @@ do
         });
 
         local HideBorderRight = Library:Create('Frame', {
-            BackgroundColor3 = Library.AccentColor;
+            BackgroundColor3 = Library:GetNextRainbowColor();
             BorderSizePixel = 0;
             Position = UDim2.new(1, 0, 0, 0);
             Size = UDim2.new(0, 1, 1, 0);
@@ -2055,8 +2106,8 @@ do
         end
 
         function Slider:UpdateColors()
-            Fill.BackgroundColor3 = Library.AccentColor;
-            Fill.BorderColor3 = Library.AccentColorDark;
+            Fill.BackgroundColor3 = Library:GetNextRainbowColor();
+            Fill.BorderColor3 = Library:GetNextRainbowColor():Lerp(Color3.new(0, 0, 0), 0.5);
         end;
 
         function Slider:Display()
@@ -2422,7 +2473,7 @@ do
                         Selected = Dropdown.Value == Value;
                     end;
 
-                    ButtonLabel.TextColor3 = Selected and Library.AccentColor or Library.FontColor;
+                    ButtonLabel.TextColor3 = Selected and Library:GetNextRainbowColor() or Library.FontColor;
                     Library.RegistryMap[ButtonLabel].Properties.TextColor3 = Selected and 'AccentColor' or 'FontColor';
                 end;
 
