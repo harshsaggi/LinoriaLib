@@ -29,15 +29,15 @@ local Library = {
 
     HudRegistry = {};
 
-    FontColor = Color3.fromRGB(240, 240, 240);
-    MainColor = Color3.fromRGB(32, 32, 32);
-    BackgroundColor = Color3.fromRGB(24, 24, 24);
-    AccentColor = Color3.fromRGB(0, 120, 255);
-    OutlineColor = Color3.fromRGB(60, 60, 60);
-    RiskColor = Color3.fromRGB(255, 70, 70),
+    FontColor = Color3.fromRGB(245, 245, 245); -- Even brighter font for better contrast
+    MainColor = Color3.fromRGB(35, 35, 35); -- Slightly lighter main color
+    BackgroundColor = Color3.fromRGB(28, 28, 28); -- Slightly lighter background
+    AccentColor = Color3.fromRGB(0, 140, 255); -- More vibrant accent color
+    OutlineColor = Color3.fromRGB(70, 70, 70); -- Lighter outline for subtlety
+    RiskColor = Color3.fromRGB(255, 80, 80), -- Adjusted risk color
 
     Black = Color3.new(0, 0, 0);
-    Font = Enum.Font.Gotham,
+    Font = Enum.Font.GothamSemibold, -- Changed to semibold for better readability
 
     OpenedFrames = {};
     DependencyBoxes = {};
@@ -1430,7 +1430,7 @@ do
             local Outer = Library:Create('Frame', {
                 BackgroundColor3 = Color3.new(0, 0, 0);
                 BorderColor3 = Color3.new(0, 0, 0);
-                Size = UDim2.new(1, -4, 0, 24); -- Taller buttons
+                Size = UDim2.new(1, -4, 0, 28); -- Even taller buttons
                 ZIndex = 5;
             });
 
@@ -1657,7 +1657,7 @@ do
         local TextBoxOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 20);
+            Size = UDim2.new(1, -4, 0, 24); -- Taller input box
             ZIndex = 5;
             Parent = Container;
         });
@@ -1820,7 +1820,6 @@ do
         local Toggle = {
             Value = Info.Default or false;
             Type = 'Toggle';
-
             Callback = Info.Callback or function(Value) end;
             Addons = {};
             Risky = Info.Risky,
@@ -1832,7 +1831,7 @@ do
         local ToggleOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(0, 15, 0, 15); -- Slightly larger toggle
+            Size = UDim2.new(0, 16, 0, 16); -- Even larger toggle
             ZIndex = 5;
             Parent = Container;
         });
@@ -1857,7 +1856,7 @@ do
 
         local ToggleLabel = Library:CreateLabel({
             Size = UDim2.new(0, 216, 1, 0);
-            Position = UDim2.new(1, 8, 0, 0); -- Increased spacing
+            Position = UDim2.new(1, 10, 0, 0); -- More spacing
             TextSize = 14;
             Text = Info.Text;
             TextXAlignment = Enum.TextXAlignment.Left;
@@ -1974,7 +1973,7 @@ do
 
         if not Info.Compact then
             Library:CreateLabel({
-                Size = UDim2.new(1, 0, 0, 12); -- Increased height
+                Size = UDim2.new(1, 0, 0, 14); -- Increased height
                 TextSize = 14;
                 Text = Info.Text;
                 TextXAlignment = Enum.TextXAlignment.Left;
@@ -1983,13 +1982,13 @@ do
                 Parent = Container;
             });
 
-            Groupbox:AddBlank(4); -- Increased spacing
+            Groupbox:AddBlank(5); -- More spacing
         end
 
         local SliderOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 15); -- Taller slider
+            Size = UDim2.new(1, -4, 0, 16); -- Even taller slider
             ZIndex = 5;
             Parent = Container;
         });
@@ -2201,7 +2200,7 @@ do
         local DropdownOuter = Library:Create('Frame', {
             BackgroundColor3 = Color3.new(0, 0, 0);
             BorderColor3 = Color3.new(0, 0, 0);
-            Size = UDim2.new(1, -4, 0, 20);
+            Size = UDim2.new(1, -4, 0, 24); -- Taller dropdown
             ZIndex = 5;
             Parent = Container;
         });
@@ -2944,7 +2943,7 @@ function Library:CreateWindow(...)
     end
 
     if type(Config.Title) ~= 'string' then Config.Title = 'No title' end
-    if type(Config.TabPadding) ~= 'number' then Config.TabPadding = 4 end -- Increased tab padding
+    if type(Config.TabPadding) ~= 'number' then Config.TabPadding = 6 end -- Increased tab padding
     if type(Config.MenuFadeTime) ~= 'number' then Config.MenuFadeTime = 0.2 end
 
     if typeof(Config.Position) ~= 'UDim2' then Config.Position = UDim2.fromOffset(175, 50) end
@@ -3518,47 +3517,7 @@ function Library:CreateWindow(...)
         ModalElement.Modal = Toggled;
 
         if Toggled then
-            -- A bit scuffed, but if we're going from not toggled -> toggled we want to show the frame immediately so that the fade is visible.
             Outer.Visible = true;
-
-            task.spawn(function()
-                -- TODO: add cursor fade?
-                local State = InputService.MouseIconEnabled;
-
-                local Cursor = Drawing.new('Triangle');
-                Cursor.Thickness = 1;
-                Cursor.Filled = true;
-                Cursor.Visible = true;
-
-                local CursorOutline = Drawing.new('Triangle');
-                CursorOutline.Thickness = 1;
-                CursorOutline.Filled = false;
-                CursorOutline.Color = Color3.new(0, 0, 0);
-                CursorOutline.Visible = true;
-
-                while Toggled and ScreenGui.Parent do
-                    InputService.MouseIconEnabled = false;
-
-                    local mPos = InputService:GetMouseLocation();
-
-                    Cursor.Color = Library.AccentColor;
-
-                    Cursor.PointA = Vector2.new(mPos.X, mPos.Y);
-                    Cursor.PointB = Vector2.new(mPos.X + 16, mPos.Y + 6);
-                    Cursor.PointC = Vector2.new(mPos.X + 6, mPos.Y + 16);
-
-                    CursorOutline.PointA = Cursor.PointA;
-                    CursorOutline.PointB = Cursor.PointB;
-                    CursorOutline.PointC = Cursor.PointC;
-
-                    RenderStepped:Wait();
-                end;
-
-                InputService.MouseIconEnabled = State;
-
-                Cursor:Remove();
-                CursorOutline:Remove();
-            end);
         end;
 
         for _, Desc in next, Outer:GetDescendants() do
